@@ -1,0 +1,21 @@
+<?php
+	$line = [
+
+		"host"=> '',
+		"username" => '',
+		"passwd" => '',
+		"dbnam"=>'',
+		];
+
+	$request=[
+		"Dlink" => "",
+		"Eltex"=> "",
+	];
+		$Err=[	
+				"Err1"=>'',
+				"ErrEnter1"=>'',
+				"ErrEnter2"=>'',
+				"info"=>''
+		,];
+					
+?>
