@@ -1,8 +1,10 @@
+version: '3.3'
 services:
-  php:
-    build: php:7.2-cli
+  php-test:
+    build: .
     restart: always
+    ports:
+      - "8088:8000"
     volumes:
       - ".:/app"
-	command: "php -S 0.0.0.0:8000 -t /app"
-	
+    command: "php -S 0.0.0.0:8000 -t /app"
