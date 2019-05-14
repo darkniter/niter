@@ -2,26 +2,30 @@
 	<head>
 		<meta charset=utf-8>
 		<style>
-			@import url("css/style.css?201905131612"); 
+			@import url("css/style.css?201905131611"); 
 		</style>
 	</head>
 
 	<body>	
-	<form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="GET">
-	<input name="ip" type= "text"  maxlength="16" required <?php $ip=htmlspecialchars($_GET["ip"]);  print ("value=$ip");?> >
+    <?php
+    $url_query=$_SERVER['QUERY_STRING'];
+    parse_str($url_query,$parts);
+    $ip=$parts['ip'];
+    $vendor=$parts['vendor'];
+    ?>
+	<form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
+	<input name="ip" type= "text"  maxlength="16" required <?php if($ip==null)$ip=htmlspecialchars($_POST["ip"]);  print ("value=$ip");?> >
 	<button name="activate" type="submit" value="Найти">Найти</button>
-	<p>Dlink<input name="vendor" type="radio" value="Dlink" <?php $radio=htmlspecialchars($_GET["vendor"]); if(($radio =="Dlink")||($radio==null)) print ("checked");?>>
-	Eltex<input name="vendor" type="radio" value="Eltex" <?php $radio=htmlspecialchars($_GET["vendor"]); if($radio =="Eltex") print ("checked");?>>
+	<p>Dlink<input name="vendor" type="radio" value="Dlink" <?php if($vendor==null)$vendor=htmlspecialchars($_POST["vendor"]); if(($vendor =="Dlink")||($vendor==null)) print ("checked");?>>
+	Eltex<input name="vendor" type="radio" value="Eltex" <?php if($vendor==null)$vendor=htmlspecialchars($_POST["vendor"]); if($vendor =="Eltex") print ("checked");?>>
 	</p></form>
 	
 <?php
 	require_once 'config.php';
-		
-		
-		//if(isset($_GET["activate"])){
+	
 		$time=0;
-		$ip=htmlspecialchars($_GET["ip"]);		
-		$radio = $_GET["vendor"];
+		$ip=htmlspecialchars($_POST["ip"]);		
+		$vendor = $_POST["vendor"];
 		$str=str_replace(".","",$ip);
 		
 		//Проверка правильности ввода
@@ -45,7 +49,7 @@
 		
 		if (mysqli_errno($link)) { die( "ERROR ".mysqli_errno($link) . ": " . mysqli_error($link) ); }
 		
-		$result =($radio=="Eltex")? mysqli_query($link,$request['Eltex']):mysqli_query($link,$request['Dlink']); //Отправление запросов на сервер
+		$result =($vendor=="Eltex")? mysqli_query($link,$request['Eltex']):mysqli_query($link,$request['Dlink']); //Отправление запросов на сервер
 		
 		if (mysqli_errno($link )) { die( "ERROR ".mysqli_errno($link) . ": " . mysqli_error($link) ); }
 
