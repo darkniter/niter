@@ -26,7 +26,7 @@
             echo '<select name = "vendor" >';
             if($vendor==null)$vendor=htmlspecialchars($_POST["vendor"]);
             
-            foreach($request as $value){
+          foreach($request as $value){
                 $name_vendor=key($request);
                 next($request);
                 echo '<option value="';
@@ -39,7 +39,8 @@
             }  
             reset($request);
             echo '</select>';
-            echo'</p></form>';        
+            echo '<button name="activate" type="submit" value="Найти">Найти</button>';
+            echo'</form></p>';          
             
             $time=0;
             $ip=htmlspecialchars($_POST["ip"]);		
