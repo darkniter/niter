@@ -13,10 +13,7 @@
             parse_str($url_query,$partsURL);
             $ip=$partsURL['ip'];
             $vendor=mb_strtolower($partsURL['vendor']);
-            
-            
-            
-            
+
             echo '<form action="' . $_SERVER['REQUEST_URI'] . '" method="POST"><input name="ip" type= "text"  maxlength="16" required ';
             
             if($ip==null)$ip=htmlspecialchars($_POST["ip"]);
