@@ -2,14 +2,16 @@
 	<head>
 		<meta charset=utf-8>
 		<style>
-			@import url("css/style.css?201905131611"); 
+			@import url("css/style.css"); 
         </style>
     </head>
     
 	<body>	
-        <p>
+        <div id='niter'><p>
             <form action="<?php echo $_SERVER['REQUEST_URI']?>" method="POST"><input name="ip" type= "text"  maxlength="16" required 
                 <?php
+                    $ip='';
+                    $vendor='';
                     $url_query=$_SERVER['QUERY_STRING'];
                     parse_str($url_query,$partsURL);
                     $ip=$partsURL['ip'];
@@ -44,8 +46,8 @@
                     
                     $time=0;
                     
-                    $ip=htmlspecialchars($_POST["ip"]);		
-                    $vendor = $_POST["vendor"];
+                    if($ip!=null)$ip=htmlspecialchars($_POST["ip"]);		
+                    if($vendor!=null)$vendor = $_POST["vendor"];
                     $str=str_replace(".","",$ip);
                     
                     
@@ -63,7 +65,7 @@
                             
                             
                             if ( $result = $mysqli->query($request["{$vendor}"]) ) { //Отправление запросов на сервер
-                                $exec_time_query = $request['Request_time'];
+                                $exec_time_query = "SELECT query_id, SUM(duration) FROM information_schema.profiling GROUP BY query_id ORDER BY query_id DESC LIMIT 1;";
                                 
                                 $exec_time_result = $mysqli->query($exec_time_query);
                                 $exec_time_row = $exec_time_result->fetch_array();
@@ -121,8 +123,8 @@
                     if(isset($exec_time_row[1])) echo "<p>Query executed in ".$exec_time_row[1].' seconds';
                     
                     echo "<br><br>Time request {$time}";
-                ?>
-                <pre style="display:none"><?php echo($SQL_time);?></pre>
-                
+                    ?>
+                    <pre style="display:none"><?php echo($SQL_time);?></pre>
+                </div>  
             </body>
-        </html>
+        </html>        
