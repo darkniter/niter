@@ -9,24 +9,29 @@
 	<body>	
         
         <?php
+            $mysqli = new mysqli('localhost','mysql','mysql','radius');
+            
             $url_query=$_SERVER['QUERY_STRING'];
             parse_str($url_query,$partsURL);
             $ip=$partsURL['ip'];
             $vendor=mb_strtolower($partsURL['vendor']);
-
-            echo '<form action="' . $_SERVER['REQUEST_URI'] . '" method="POST"><input name="ip" type= "text"  maxlength="16" required ';
+            $exec_time_row = 0;
+            
+            
+            
+            echo '<p><form action="' . $_SERVER['REQUEST_URI'] . '" method="POST"><input name="ip" type= "text"  maxlength="16" required ';
             
             if($ip==null)$ip=htmlspecialchars($_POST["ip"]);
             
             echo "value={$ip}>";
-            echo '<button name="activate" type="submit" value="Найти">Найти</button><p>';
+            
             
             require_once 'config.php';
             
             echo '<select name = "vendor" >';
             if($vendor==null)$vendor=htmlspecialchars($_POST["vendor"]);
             
-          foreach($request as $value){
+            foreach($request as $value){
                 $name_vendor=key($request);
                 next($request);
                 echo '<option value="';
@@ -40,7 +45,7 @@
             reset($request);
             echo '</select>';
             echo '<button name="activate" type="submit" value="Найти">Найти</button>';
-            echo'</form></p>';          
+            echo'</form></p>';        
             
             $time=0;
             $ip=htmlspecialchars($_POST["ip"]);		
@@ -64,40 +69,70 @@
                 if((ctype_digit($str)==true) && (substr_count($ip,".")==3)){
                     
                     $time=microtime(true);
-                    mysqli_query($link, "SET profiling = 1;");
-                    
-                    if (mysqli_errno($link)) { die( "ERROR ".mysqli_errno($link) . ": " . mysqli_error($link) ); }
+                // $mysqli ->query("SET GLOBAL general_log = 'ON'");
                     
                     
-                    if ( $result = mysqli_query($link,$request["{$vendor}"]) ) { //Отправление запросов на сервер
-                        $exec_time_result=mysqli_query($link, "SELECT query_id, SUM(duration) FROM information_schema.profiling GROUP BY query_id ORDER BY query_id DESC LIMIT 1;");
-                        $exec_time_row = mysqli_fetch_array($exec_time_result);
+                    if ( $result = $mysqli->query($request["{$vendor}"]) ) { //Отправление запросов на сервер
+                        
+                        
+                        
+                        
                         $time = microtime(true)-$time;
+                        
                         if($result->num_rows){//Обработка пустого ответа от сервера 
-                            echo'<table><tr><th>Логин</th><th>MAC-адрес</th><th>Порт</th><th> Дата </th></tr>';
+                            
+                            if($result!=null){
+                                $a = mysqli_num_fields($result);//сорян мозги кипели
+                                echo'<table> <tr>';
+                                
+                                for($i=0;$i<$a;$i++){
+                                    
+                                    
+                                    $info_column = $result->fetch_field_direct($i); 
+                                    
+                                    $name_column= $info_column->name;
+                                    
+                                    echo "<th>{$name_column}</th>";
+ 
+                                }
+                                echo '</tr>';
+                            }
                             
                             
-                            while($resource=mysqli_fetch_array($result)){ //Вывод таблицы с полученными значениями
-                                echo "<tr><td>{$resource['login']}</td><td>{$resource['mac']}</td><td>{$resource['port']}</td><td>{$resource['date']}</td></tr>";
-                            } 
+                            
+                            while($resource=$result->fetch_array(MYSQLI_ASSOC)){ //Вывод таблицы с полученными значениями
+                                echo '<tr>';
+                                for($i=0;$i<$a;$i++){
+                                    $info_column = $result->fetch_field_direct($i); 
+                                    
+                                    $name_column= $info_column->name;
+                                    
+                                    echo '<td>'.$resource["{$name_column}"].'</td>';
+                                }
+                                echo '</tr>';
+                            }
                             echo '</table>';
+                            $result->close();
                         }
                         else echo $Err["ErrEnter2"];
                         } else {
                         echo $Err["ErrRequestEmpty"];
                     }
                     
+                  
+                    
                 }elseif($str==""){echo $Err["info"];}
                 else echo $Err["ErrEnter1"];
             }
             else
             echo $Err["Err1"];
-            if(isset($exec_time_row[1])) echo "<p>Query executed in ".$exec_time_row[1].' seconds';
+         
+        /* $result = $mysqli -> query("SELECT * FROM mysql.general_log");
+         $SQL_time=$result ->fetch_array(MYSQLI_ASSOC);*/
             
             echo "<br><br>Time request {$time}";
         ?>
-        <!--<pre><?php var_dump( $_SERVER ); ?></pre>
-        <pre><?php var_dump( $_GET ); ?></pre>
-        <pre><?php var_dump( $_POST ); ?></pre>-->
+        <!--<pre style="display:none"><?php echo($SQL_time);?></pre>-->
+        
     </body>
 </html>
