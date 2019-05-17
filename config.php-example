@@ -1,22 +1,44 @@
 <?php
-	$line = [
+error_reporting(E_ALL);
 
-		"host"=> '',
-		"username" => '',
-		"passwd" => '',
-		"dbnam"=>'',
-		];
+ini_set('display_errors', 1);
 
-	$request=[
-		"Dlink" => "",
-		"Eltex"=> "",
-	];
-		$Err=[	
-    "Err1"=>'<br>Ошибка подключения к серверу баз данных',
-    "ErrEnter1"=>'<br>Ошибка ввода: Недопустимые символы в введенной строке или неполный ip-адрес (Принимаемая строка должна содержать ip : %255.255.255.255%)<br>',
-    "ErrEnter2"=>'<br>Сервер вернул пустое значение(в базе такого ip нет), попробуйте выбрать другого производителя или проверить правильность ввода<br>',
-    "info"=>'<br> Пожалуйста, введите ip и производителя устройства (ip формат |###.###.###.###|)',
-    "ErrRequestEmpty"=>'К сожалению, запрос к серверу не заполнен. Пожалуйста, обратитесь к администратору сервера (заполните значение $request в файле config.php)',
-    ];
-					
+$line = [
+
+    "host"=> 'localhost',
+    "username" => 'mysql',
+    "passwd" => 'mysql',
+    "dbnam" => 'radius',
+];   
+$request = [
+    "dlink" => "
+        SELECT DISTINCT login, mac, circuit_id, CAST(SUBSTRING_INDEX(circuit_id, '::', -1) AS UNSIGNED) port, max(`date`) date
+        FROM `acc`
+        WHERE
+        circuit_id LIKE '%%::%s::%%'
+        and `date` > (NOW() - INTERVAL 6 MONTH)
+        group by login, circuit_id, port, mac
+        ORDER BY port
+        ",
+    "eltex" => "
+        SELECT DISTINCT login, mac, circuit_id, CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(circuit_id, '/', -1), ':', 1) AS UNSIGNED) port, max(`date`) date
+        FROM `acc`
+        WHERE
+        circuit_id LIKE '%s%%'
+        and `date` > (NOW() - INTERVAL 6 MONTH)
+        group by login, circuit_id, port, mac
+        ORDER BY port
+            ",
+    "microtic" => "",
+    
+    "tp-link" => "",
+];
+$Err = [	
+            "Err1" => '<br>Ошибка подключения к серверу баз данных',
+            "ErrEnter1" => '<br>Ошибка ввода: Недопустимые символы в введенной строке или неполный ip-адрес (Принимаемая строка должна содержать ip : %255.255.255.255%)<br>',
+            "ErrEnter2" => '<br>Сервер вернул пустое значение(в базе такого ip нет), попробуйте выбрать другого производителя или проверить правильность ввода<br>',
+            "info" => '<br> Пожалуйста, введите ip и производителя устройства (ip формат |###.###.###.###|)',
+            "ErrRequestEmpty" => 'К сожалению, запрос к серверу не заполнен. Пожалуйста, обратитесь к администратору сервера (заполните значение $request в файле config.php)',
+];
+    
 ?>
