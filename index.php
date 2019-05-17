@@ -8,57 +8,59 @@
     
 	<body>	
         <div id='niter'><p>
-            <form action="<?php echo $_SERVER['REQUEST_URI']?>" method="POST"><input name="ip" type= "text"  maxlength="16" required 
-                <?php
-                    require_once 'config.php';
-                    
-                    $url_query = $_SERVER['QUERY_STRING'];
-                    
-                    if($_SERVER['QUERY_STRING']!==''){parse_str($url_query,$partsURL);
+            <?php
+                echo"<form action=". $_SERVER['REQUEST_URI'].' method="POST"><input name="ip" type= "text"  maxlength="16" required '; 
+                
+                require_once 'config.php';
+                
+                $url_query = $_SERVER['QUERY_STRING'];
+                
+                if($_SERVER['QUERY_STRING']!==''){parse_str($url_query,$partsURL);
                     $ip = isset($partsURL['ip'])?  $partsURL['ip']:'';
                     $vendor = isset($partsURL['vendor'])?$partsURL['vendor']:'';
-                    }
+                }
+                
+                if(isset($_POST["ip"]))$ip=htmlspecialchars($_POST["ip"]);
+                
+                if(isset($ip)) echo "value={$ip}>";
+                else echo ">";
+                
+                echo '<select name = "vendor" >';
+                
+                if(isset($_POST["vendor"])&&isset($vendor))$vendor=($_POST["vendor"]);
+                
+                
+                
+                foreach($request as $key=>$value){
+                    $name_vendor=$key;
+                    // next($request);
+                    echo '<option value="';
                     
-                    if(isset($_POST["ip"]))$ip=htmlspecialchars($_POST["ip"]);
-                    
-                    if(isset($ip)) echo "value={$ip}>";
-                    else echo ">";
-                    
-                    echo '<select name = "vendor" >';
-                    
-                    if(isset($_POST["vendor"]))$vendor=($_POST["vendor"]);
-                    
-                   
-                    
-                    foreach($request as $key=>$value){
-                        $name_vendor=$key;
-                        // next($request);
-                        echo '<option value="';
-                        
-                        echo $name_vendor;
-                        echo'"';
-                        if(isset($vendor) && mb_strtolower($name_vendor)==mb_strtolower($vendor)) echo 'selected';
-                        echo '>';
-                        echo "{$name_vendor}</option>";
-                    }  
-                   
-                    echo '</select>';
-                    echo '<button name="activate" type="submit" value="Найти">Найти</button>';
-                    echo'</form></p>';  
-                    
-                    $mysqli = new mysqli(...array_values($line));
-                    
-                    $time=0;
-                    
-
-                    if (isset($ip))$str=str_replace(".","",$ip);
+                    echo $name_vendor;
+                    echo'"';
+                    if(isset($vendor) && mb_strtolower($name_vendor)==mb_strtolower($vendor)) echo 'selected';
+                    echo '>';
+                    echo "{$name_vendor}</option>";
+                }  
+                
+                echo '</select>';
+                echo '<button name="activate" type="submit" value="Найти">Найти</button>';
+                echo'</form></p>';  
+                
+                $mysqli = new mysqli(...array_values($line));
+                
+                $time=0;
+                
+                
+                if (isset($ip)&& isset($_POST['ip'])){
+                $str=str_replace(".","",$ip);
                     
                     $vendor = mb_strtolower($vendor);
                     if ($mysqli->connect_errno) {
                         echo "Failed to connect to MySQL: " . mysqli_connect_error();
                         echo $Err["Err1"];
-                        }
-                        else {
+                    }
+                    else {
                         echo 'Соединение установлено.<br>';
                         if((ctype_digit($str)==true) && (substr_count($ip,".")==3)){
                             
@@ -123,13 +125,14 @@
                         }
                         else echo $Err["ErrEnter1"];
                     }
-                    
-                    if(isset($exec_time_row[1])) echo "<p>Query executed in ".$exec_time_row[1].' seconds';
-                    
-                    echo "<br><br>Time request {$time}";
-                    // }else echo $Err["info"];
-                ?>
-            <pre style="display:none"><?php var_dump($_SERVER['QUERY_STRING']);?></pre>
+                }else echo $Err["info"];
+                
+                if(isset($exec_time_row[1])) echo "<p>Query executed in ".$exec_time_row[1].' seconds';
+                
+                echo "<br><br>Time request {$time}";
+                // }else echo $Err["info"];
+            ?>
+            <!--<pre style="display:none"><?php var_dump($_POST);?></pre>-->
         </div>  
         </body>
-    </html>                    
+    </html>                        
