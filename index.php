@@ -10,51 +10,55 @@
         <div id='niter'><p>
             <form action="<?php echo $_SERVER['REQUEST_URI']?>" method="POST"><input name="ip" type= "text"  maxlength="16" required 
                 <?php
-                    $ip='';
-                    $vendor='';
-                    $url_query=$_SERVER['QUERY_STRING'];
-                    parse_str($url_query,$partsURL);
-                    $ip=$partsURL['ip'];
-                    $vendor=mb_strtolower($partsURL['vendor']);
-                    
-                    if($ip==null)$ip=htmlspecialchars($_POST["ip"]);
-                    
-                    echo "value={$ip}>";
-                    
-                    echo '<select name = "vendor" >';
-                    if($vendor==null)$vendor=htmlspecialchars($_POST["vendor"]);
-                    
                     require_once 'config.php';
                     
-                    foreach($request as $value){
-                        $name_vendor=key($request);
-                        next($request);
+                    $url_query = $_SERVER['QUERY_STRING'];
+                    
+                    if($_SERVER['QUERY_STRING']!==''){parse_str($url_query,$partsURL);
+                    $ip = isset($partsURL['ip'])?  $partsURL['ip']:'';
+                    $vendor = isset($partsURL['vendor'])?$partsURL['vendor']:'';
+                    }
+                    
+                    if(isset($_POST["ip"]))$ip=htmlspecialchars($_POST["ip"]);
+                    
+                    if(isset($ip)) echo "value={$ip}>";
+                    else echo ">";
+                    
+                    echo '<select name = "vendor" >';
+                    
+                    if(isset($_POST["vendor"]))$vendor=($_POST["vendor"]);
+                    
+                   
+                    
+                    foreach($request as $key=>$value){
+                        $name_vendor=$key;
+                        // next($request);
                         echo '<option value="';
                         
                         echo $name_vendor;
                         echo'"';
-                        if(mb_strtolower($name_vendor)==mb_strtolower($vendor)) echo 'selected';
+                        if(isset($vendor) && mb_strtolower($name_vendor)==mb_strtolower($vendor)) echo 'selected';
                         echo '>';
                         echo "{$name_vendor}</option>";
                     }  
-                    reset($request);
+                   
                     echo '</select>';
                     echo '<button name="activate" type="submit" value="Найти">Найти</button>';
                     echo'</form></p>';  
                     
-                    $mysqli = new mysqli('localhost','mysql','mysql','radius');
+                    $mysqli = new mysqli(...array_values($line));
                     
                     $time=0;
                     
-                    if($ip!=null)$ip=htmlspecialchars($_POST["ip"]);		
-                    if($vendor!=null)$vendor = $_POST["vendor"];
-                    $str=str_replace(".","",$ip);
+
+                    if (isset($ip))$str=str_replace(".","",$ip);
                     
-                    
+                    $vendor = mb_strtolower($vendor);
                     if ($mysqli->connect_errno) {
                         echo "Failed to connect to MySQL: " . mysqli_connect_error();
                         echo $Err["Err1"];
-                        } else {
+                        }
+                        else {
                         echo 'Соединение установлено.<br>';
                         if((ctype_digit($str)==true) && (substr_count($ip,".")==3)){
                             
@@ -64,7 +68,7 @@
                             
                             
                             
-                            if ( $result = $mysqli->query($request["{$vendor}"]) ) { //Отправление запросов на сервер
+                            if ( $result = $mysqli->query(sprintf($request["{$vendor}"], $ip))) { //Отправление запросов на сервер
                                 $exec_time_query = "SELECT query_id, SUM(duration) FROM information_schema.profiling GROUP BY query_id ORDER BY query_id DESC LIMIT 1;";
                                 
                                 $exec_time_result = $mysqli->query($exec_time_query);
@@ -116,15 +120,16 @@
                             
                             
                             
-                        }elseif($str==""){echo $Err["info"];}
+                        }
                         else echo $Err["ErrEnter1"];
                     }
                     
                     if(isset($exec_time_row[1])) echo "<p>Query executed in ".$exec_time_row[1].' seconds';
                     
                     echo "<br><br>Time request {$time}";
-                    ?>
-                    <pre style="display:none"><?php echo($SQL_time);?></pre>
-                </div>  
-            </body>
-        </html>        
+                    // }else echo $Err["info"];
+                ?>
+            <pre style="display:none"><?php var_dump($_SERVER['QUERY_STRING']);?></pre>
+        </div>  
+        </body>
+    </html>                    
