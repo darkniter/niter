@@ -28,8 +28,8 @@
                 
                 echo '<select name = "vendor" >';
                 
-                if(isset($_POST["vendor"])&&isset($vendor))$vendor=($_POST["vendor"]);
-                
+                if(isset($_POST["vendor"]))$vendor=($_POST["vendor"]);
+                        
                 
                 
                 foreach($request as $key=>$value){
