@@ -69,7 +69,7 @@
                             $mysqli->query("SET profiling = 1;");
                             
                             
-                            // TODO: 
+                            
                             if ( $result = $mysqli->query(sprintf($request["{$vendor}"], $ip))) { //Отправление запросов на сервер
                                 $exec_time_query = "SELECT query_id, SUM(duration) FROM information_schema.profiling GROUP BY query_id ORDER BY query_id DESC LIMIT 1;";
                                 
