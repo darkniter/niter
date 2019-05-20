@@ -7,9 +7,9 @@
     </head>
     
 	<body>	
-        <div id='niter'><p>
+        <div id='niter'><p> <form action="<?php echo $_SERVER['REQUEST_URI']?>" method="POST"><input name="ip" type= "text"  maxlength="16" required 
             <?php
-                echo"<form action=". $_SERVER['REQUEST_URI'].' method="POST"><input name="ip" type= "text"  maxlength="16" required '; 
+           
                 
                 require_once 'config.php';
                 
@@ -66,12 +66,12 @@
                             
                             $time=microtime(true);
                             
-                            $mysqli->query("SET profiling = 1;");
+                            $mysqli->query($time_request['value_prof']);
                             
                             
                             
                             if ( $result = $mysqli->query(sprintf($request["{$vendor}"], $ip))) { //Отправление запросов на сервер
-                                $exec_time_query = "SELECT query_id, SUM(duration) FROM information_schema.profiling GROUP BY query_id ORDER BY query_id DESC LIMIT 1;";
+                                $exec_time_query = $time_request['request'];
                                 
                                 $exec_time_result = $mysqli->query($exec_time_query);
                                 $exec_time_row = $exec_time_result->fetch_array();
