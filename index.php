@@ -13,11 +13,12 @@
                 
                 require_once 'config.php';
                 
-                $url_query = $_SERVER['QUERY_STRING'];
-                
-                if($_SERVER['QUERY_STRING']!==''){parse_str($url_query,$partsURL);
-                    $ip = isset($partsURL['ip'])?  $partsURL['ip']:'';
-                    $vendor = isset($partsURL['vendor'])?$partsURL['vendor']:'';
+                if(isset( $_SERVER['QUERY_STRING'])){
+                    $url_query = $_SERVER['QUERY_STRING'];
+                    if($_SERVER['QUERY_STRING']!==''){parse_str($url_query,$partsURL);
+                        $ip = isset($partsURL['ip'])?  $partsURL['ip']:'';
+                        $vendor = isset($partsURL['vendor'])?$partsURL['vendor']:'';
+                    }
                 }
                 
                 if(isset($_POST["ip"]))$ip=htmlspecialchars($_POST["ip"]);
