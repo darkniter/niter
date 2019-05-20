@@ -29,9 +29,13 @@ $request = [
         group by login, circuit_id, port, mac
         ORDER BY port
             ",
-    "microtic" => "",
-    
-    "tp-link" => "",
+ 
+];
+$time_request=[
+    "request" => 'SELECT query_id, SUM(duration) FROM information_schema.profiling GROUP BY query_id ORDER BY query_id DESC LIMIT 1;',
+    "value_prof" => 'SET profiling = 1;',
+
+
 ];
 $Err = [	
             "Err1" => '<br>Ошибка подключения к серверу баз данных',
@@ -40,5 +44,5 @@ $Err = [
             "info" => '<br> Пожалуйста, введите ip и производителя устройства (ip формат |###.###.###.###|)',
             "ErrRequestEmpty" => 'К сожалению, запрос к серверу не заполнен. Пожалуйста, обратитесь к администратору сервера (заполните значение $request в файле config.php)',
 ];
-    
+// example    
 ?>
